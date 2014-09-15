@@ -1,0 +1,134 @@
+package main;
+
+import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+public class Parser {
+	String data;
+	String imei;
+	Bd bd;
+	public Parser(Bd bd) {
+		this.bd = bd;
+	}
+
+	public void first(String data) {
+		this.data = data;
+		List<String> list = setList(data);
+	//	this.imei = list.get(0).split(",")[0];
+		
+		String[] param = list.remove(0).split(",");
+		this.imei = param[0];
+		Map<String, String> map = new HashMap< String, String>(); 
+		
+		map.put("time", param[1]);
+		map.put("veraciously", param[2]);
+		map.put("lat", param[3]);
+		map.put("lng", param[5]);
+		map.put("speed", param[7]);
+		map.put("azimuth", param[8]);
+		map.put("date", param[9]);
+		map.put("sputnik", param[10]);
+		map.put("zaryad", param[12]);
+		
+		//System.out.println("imei: "+this.imei+ " lat: "+map.get("lat"));
+		//{2910921893832,120305,A,5025.989,N,03023.704,E,0.0,58.,180414,7,00,F9,62,1,,,,,,,07,,,191.815,M,3,,}
+		//{120305,A,5025.989,N,03023.704,E,0.0,58.,180414,7,00,F9,62,1,,,,,,,07,,,191.815,M,3,,}
+		convert(map);
+		while (!list.isEmpty()) {
+			params(list.remove(0));
+		}
+
+	}
+
+	public void next(String data) {
+		List<String> list = setList(data);
+		while (!list.isEmpty()) {
+			params(list.remove(0));
+		}
+
+	}
+
+	private void params(String row) {
+		String[] param = row.split(",");
+		Map<String, String> map = new HashMap< String, String>(); 
+		map.put("time", param[0]);
+		map.put("veraciously", param[1]);
+		map.put("lat", param[2]);
+		map.put("lng", param[4]);
+		map.put("speed", param[6]);
+		map.put("azimuth", param[7]);
+		map.put("date", param[8]);
+		map.put("sputnik", param[9]);
+		map.put("zaryad", param[11]);
+		
+		//System.out.println("imei: "+this.imei+ " lat: "+map.get("lat"));
+		convert(map);
+	}
+
+	private List<String> setList(String data) {
+		List<String> allMatches = new ArrayList<String>();
+		Matcher m = Pattern.compile("[{][^}]+[}]").matcher(data);
+		while (m.find()) {
+			allMatches.add(m.group().replaceAll("[{]|[}]", ""));
+		}
+
+		return allMatches;
+
+	}
+	private String demic(String s){
+		
+		double d =Double.valueOf(s.trim()).doubleValue();
+		d= d/100;
+		s = ""+Double.toString(d);
+		String rest="0";
+		double drest;
+		System.out.println(s);
+		
+		if(!s.matches("[.]")){
+			rest=s.split("[.]")[1];
+			drest =Double.valueOf(rest.trim()).doubleValue();
+			drest = 100*drest/60;
+			rest = Double.toString(drest);
+			if(!rest.matches("[.]")){
+				rest = rest.replaceAll("[.]", "");
+			}
+		}
+		//{2910921893832,120305,A,5025.989,N,03023.704,E,0.0,58.,180414,7,00,F9,62,1,,,,,,,07,,,191.815,M,3,,}
+		s=s.split("[.]")[0]+"."+rest;
+		d =Double.valueOf(s.trim()).doubleValue();
+		
+		double dd=Math.pow(10,6); 
+		 d = Math.round(d*dd)/dd; 
+		 s =Double.toString(d);
+		return s;
+	}
+	
+	private void convert(Map<String, String> map) {
+		Map<String,String> line = map;
+		//String lat = map.get("lat");
+		String lat = demic(map.get("lat"));
+		
+		
+		
+		
+		System.out.println(lat);
+		
+		
+		/*try {
+			bd.save("dds");
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}*/
+		
+	}
+
+}

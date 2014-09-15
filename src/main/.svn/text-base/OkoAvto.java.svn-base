@@ -1,0 +1,17 @@
+package main;
+
+import java.net.ServerSocket;
+import java.sql.SQLException;
+
+public class OkoAvto {
+
+	public static void main(String[] args) throws ClassNotFoundException, SQLException {
+	//	String x = ("232178.0").split(",")[0].split("[.]")[0];
+		//x = x.split("[.]")[0];
+		//System.out.println(x);
+		Bd bd = new Bd("root","astalavista","localhost", "monitoring");
+		//bd.save();
+		new Server(10002, bd);
+	}
+
+}

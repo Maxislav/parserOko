@@ -1,0 +1,6 @@
+{
+	"root":"root",
+	"url":"localhost",
+	"table":"monitoring",
+	"pass":"astalavista"
+}

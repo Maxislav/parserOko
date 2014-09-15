@@ -1,0 +1,50 @@
+package main;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+
+import java.sql.Statement;
+
+public  class Bd {
+	Connection connection;
+	String root;
+	String pass;
+	String serverName;
+	String baseName;
+	Statement stmt=null;
+	
+	public Bd(String root, String pass, String serverName, String baseName){
+		this.root = root;
+		this.pass = pass;
+		this.serverName = serverName;
+		this.baseName = baseName;
+		
+	}
+	
+	private void connect() throws ClassNotFoundException, SQLException{
+		String driverName = "com.mysql.jdbc.Driver";
+		Class.forName(driverName);
+		String url = "jdbc:mysql://"+serverName+"/"+baseName;
+		connection = DriverManager.getConnection(url,root,pass);
+		stmt = connection.createStatement();
+		System.out.println("MySQL connect");
+		
+	}
+	
+	
+	public void save(String line) throws SQLException, ClassNotFoundException {
+		if(connection == null || connection.isClosed()){
+			connect();
+		}
+		try{
+			String query = line;
+			stmt.executeQuery(query);
+			
+		}catch(Exception e){
+			
+		}
+		
+	}
+	
+
+}

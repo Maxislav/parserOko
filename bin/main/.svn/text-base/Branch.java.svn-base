@@ -1,0 +1,62 @@
+package main;
+
+import java.net.Socket;
+
+public class Branch extends Thread{
+	Socket s; 
+	int connection;
+	int mes;
+	static Bd bd;
+	Parser parser;
+		public Branch(int i, Socket s, Bd bd) {
+			Branch.bd = bd;
+			this.parser = new Parser(bd);
+			this.s = s;
+			System.out.println("new connection"+i);
+			this.connection = i;
+	        this.s = s;
+	        setDaemon(true);
+	        setPriority(NORM_PRIORITY);
+	        start(); 
+		}
+		
+		 public void run(){
+			while(true){
+				try{
+					  byte [] buf = new byte[64*1024];
+		                // читаем 64кб от клиента, результат - кол-во реально принятых данных
+		                // int r = is.read(buf);
+		                
+		                // из сокета клиента берём поток входящих данных
+		                //InputStream is = s.getInputStream();
+		                int r = s.getInputStream().read(buf); // количество принятых байт в посылке
+		                System.out.println("Recessive bite"+r);
+		                if (r==(-1)){
+		                    System.out.println("socet close");  // если клиент дисконект закрываем сокет
+		                    s.close();
+		                    return;
+		                 }
+		                mes++;
+		                
+		                String data = new String(buf, 0, r);// создаём строку, содержащую полученную от клиента информацию
+		                System.out.println("connection:"+connection+" mes: "+ mes+ data); //выводим полученные данные на экран
+		                if(mes==1){
+		                	 parser.first(data);
+		                }else{
+		                	if(mes>100){
+		                		mes= 2;
+		                	}
+		                	 parser.next(data);
+		                	
+		                }
+		                
+		                
+				}catch(Exception e){
+					System.out.print(e);
+				}
+			}
+			
+			
+		}
+
+}

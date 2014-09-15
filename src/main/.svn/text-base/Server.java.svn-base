@@ -1,0 +1,30 @@
+package main;
+
+import java.net.InetAddress;
+import java.net.ServerSocket;
+//Создаем сервер
+public class Server {
+	int port;
+	int i=0;
+	public Server(int port, Bd bd) {
+		
+		
+		try{
+			ServerSocket server = new ServerSocket(port, 0, InetAddress.getByName("localhost"));
+			
+			InetAddress me = InetAddress.getLocalHost();
+			String ip = me.getHostAddress();
+			System.out.println("server is started  IP: "+ip+" port:"+port);
+			
+			while(true){
+				i++;
+				new Branch(i, server.accept(), bd);
+			}
+			
+		}catch(Exception e){
+			System.out.println("Error create server " +  e);
+			
+		}
+		
+	}
+}
